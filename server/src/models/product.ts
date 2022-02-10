@@ -3,8 +3,8 @@ import { Schema, model, Document } from 'mongoose';
 export interface IProduct extends Document {
   id: string;
   name: string;
-  length: number;
-  weight: number;
+  units: number;
+  unitValue: number;
 }
 
 const productSchema = new Schema<IProduct>(

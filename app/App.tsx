@@ -1,22 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+/* eslint-disable camelcase */
+import React from 'react';
+import { ThemeProvider } from 'styled-components';
 
-import useCachedResources from './hooks/useCachedResources';
-import useColorScheme from './hooks/useColorScheme';
-import Navigation from './navigation';
+import {
+  useFonts,
+  Roboto_400Regular,
+  Roboto_500Medium,
+  Roboto_700Bold,
+} from '@expo-google-fonts/roboto';
+import AppLoading from 'expo-app-loading';
+import { NavigationContainer } from '@react-navigation/native';
+import Navigation from './src/navigation/navigation';
+
+import theme from './src/global/styles/theme';
 
 export default function App() {
-  const isLoadingComplete = useCachedResources();
-  const colorScheme = useColorScheme();
-
-  if (!isLoadingComplete) {
-    return null;
-  } else {
-    return (
-      <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
-        <StatusBar />
-      </SafeAreaProvider>
-    );
-  }
+  const [fontLoaded] = useFonts({
+    Roboto_400Regular,
+    Roboto_500Medium,
+    Roboto_700Bold,
+  });
+  if (!fontLoaded) return <AppLoading />;
+  return (
+    <ThemeProvider theme={theme}>
+      <NavigationContainer>
+          <Navigation />
+      </NavigationContainer>
+    </ThemeProvider>
+  );
 }
