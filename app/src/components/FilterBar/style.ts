@@ -2,34 +2,41 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
 import { MaterialIcons } from '@expo/vector-icons';
 
+interface FilterTypes {
+  type: "selected" | "unselected"
+}
+
 export const Container = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
   width: 100%;
+  margin: 8px 0px;
 `;
 
-export const Filter = styled.TouchableOpacity`
-flex-direction: row;
+export const Filter = styled.TouchableOpacity<FilterTypes>`
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-    border-radius: 50px;
-    padding: 4px 8px;
+  border-radius: 50px;
+  padding: 4px 8px;
+  background-color: ${({ theme, type }) => type === "selected" ? theme.colors.primary : 'transparent'};
 `;
 
-export const FilterName = styled.Text`
+export const FilterName = styled.Text<FilterTypes>`
   font-family: ${({ theme }) => theme.fonts.medium};
   font-size: ${RFValue(14, 812)}px;
   /* background: transparent; */
-  color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme, type }) => type === "selected" ? theme.colors.secondary_background : theme.colors.primary};
 `;
 
 export const SelectedIcon = styled(MaterialIcons)`
-  font-size: ${RFValue(16, 812)};
+  padding-right: 4px; 
+  font-size: ${RFValue(16, 812)}px;
   color: ${({ theme }) => theme.colors.secondary_background};
 `;
 
 export const FilterIcon = styled(MaterialIcons)`
-  font-size: ${RFValue(24, 812)};
+  font-size: ${RFValue(24, 812)}px;
   color: ${({ theme }) => theme.colors.primary};
 `;

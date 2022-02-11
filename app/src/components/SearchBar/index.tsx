@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import {
     Container,
     Input,
@@ -7,20 +7,22 @@ import {
 } from './style';
 import theme from '../../global/styles/theme';
 
-// interface ISearchProps {
-//     value: string;
-//     setValue: Dispatch<SetStateAction<string>>;
-//   }
+interface ISearchProps {
+    value: string;
+    setValue: Dispatch<SetStateAction<string>>;
+  }
 
 export function ProductSearchBar(
-    // { value, setValue }: ISearchProps
+    { value, setValue }: ISearchProps
 ) {
     return (
         <Container>
             <InputContainer>
                 <Input 
                     placeholder='Pesquisar'
-                    placeholderTextColor={theme.colors.secondary}
+                    placeholderTextColor={`${theme.colors.secondary}80`}
+                    value={value}
+                    onChangeText={setValue}
                 />
             <MaterialInputIcon name="search" /> 
             </InputContainer>

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import React, { useEffect, useState } from 'react';
+import { View, ImageBackground, StyleSheet } from 'react-native';
 import {
   HomeContainer,
   FieldsContainer
@@ -9,17 +9,41 @@ import { NewProduct } from '../../components/NewProduct';
 import { ProductList } from '../../components/ProductList';
 
 export default function Home({ navigation }: any) {
-  // const { authenticated } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [newProductName, setNewProductName] = useState("");
+  const [newProductNumberOfUnits, setNewProductNumberOfUnits] = useState("");
+  const [newProductUnitValue, setNewProductUnitValue] = useState("");
+
   useEffect(() => {
 
   }, []);
 
   return (
     <HomeContainer>
-      <ProductSearchBar />
+      <ImageBackground
+        source={require("../../assets/bg_img.png")}
+        style={[
+          StyleSheet.absoluteFillObject
+        ]}
+        resizeMode="cover"
+        blurRadius={15}
+      />
+      <ProductSearchBar
+        value={searchQuery}
+        setValue={setSearchQuery}
+      />
       <FieldsContainer>
-        <NewProduct />
-        <ProductList />
+        <NewProduct
+          createFunction={() => { }}
+          productName={newProductName}
+          productNumberOfUnits={newProductNumberOfUnits}
+          productUnitValue={newProductUnitValue}
+          setProductName={setNewProductName}
+          setProductNumberOfUnits={setNewProductNumberOfUnits}
+          setProductUnitValue={setNewProductUnitValue}
+        />
+        <ProductList searchQuery={searchQuery} />
       </FieldsContainer>
     </HomeContainer>
   );

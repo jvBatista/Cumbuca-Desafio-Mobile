@@ -16,7 +16,7 @@ export const InputContainer = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: #FFFFFF95;
+  background-color: ${({ theme }) => theme.colors.terciary_background};
   width: 100%;
   padding: 4px 16px;
   border-radius: 50px;
@@ -34,6 +34,6 @@ export const Input = styled.TextInput`
 `;
 
 export const MaterialInputIcon = styled(MaterialIcons)`
-  font-size: ${RFValue(24, 812)};
+  font-size: ${RFValue(24, 812)}px;
   color: ${({ theme }) => theme.colors.secondary};
 `;

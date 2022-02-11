@@ -5,10 +5,12 @@ export const HomeContainer = styled.View`
   flex: 1;
   width: 100%;
   align-items: center;
-  background: gray;
+  justify-content: center;
 `;
 
 export const FieldsContainer = styled.View`
   width: 100%;
+  height: 90%;
+  /* align-items: center;*/
   padding: 0px 8px;
 `;

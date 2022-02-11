@@ -7,9 +7,12 @@ export const Container = styled.View`
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.background};
   width: 100%;
-  height: ${RFValue(116, 812)}px;
+  /* height: ${RFValue(116, 812)}px; */
   border-radius: 5px;
-  padding: 0px 8px;
+  border: .5px solid ${({ theme }) => theme.colors.terciary+'25'};
+  padding: 8px;
+  margin-bottom: 28px;
+  margin-top: 8px;
 `;
 
 export const InputRow = styled.View`
@@ -17,6 +20,7 @@ export const InputRow = styled.View`
   align-items: center;
   justify-content: flex-start;
   width: 100%;
+  margin-bottom: 8px;
 `;
 
 export const InputContainer = styled.View`
@@ -47,4 +51,5 @@ export const InputTitle = styled.Text`
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(12, 812)}px;
   margin-left: 8px;
+  margin-bottom: 4px;
 `;

@@ -9,10 +9,12 @@ export const Container = styled.View`
   height: ${RFValue(96, 812)}px;
   border-radius: 5px;
   padding: 16px;
+  margin-bottom: 8px;
+  border: .5px solid ${({ theme }) => theme.colors.terciary+'25'};
 `;
 
 export const TitleContainer = styled.View`
-flex-direction: row;
+  flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   width: 100%;
@@ -20,9 +22,10 @@ flex-direction: row;
 `;
 
 export const ProductName = styled.Text`
-font-family: ${({ theme }) => theme.fonts.medium};
+  font-family: ${({ theme }) => theme.fonts.medium};
   font-size: ${RFValue(16, 812)}px;
   color: ${({ theme }) => theme.colors.primary};
+  margin-right: 4px;
 `;
 
 export const AtributeName = styled.Text`
@@ -34,15 +37,16 @@ font-family: ${({ theme }) => theme.fonts.regular};
 export const AtributesContainer = styled.View`
 flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-  width: 100%;
+  justify-content: space-between;
+  width: 75%;
 `;
 
 export const Atribute = styled.View`
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-around;
 `;
 
 export const AtributeValue = styled(ProductName)`
   font-size: ${RFValue(14, 812)}px;
+  margin: 0px;
 `;
