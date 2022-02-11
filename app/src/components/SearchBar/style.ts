@@ -1,7 +1,6 @@
 import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
 import { MaterialIcons } from '@expo/vector-icons';
-// import { TextInputMask } from 'react-native-masked-text';
 
 export const Container = styled.View`
   align-items: center;
@@ -9,7 +8,7 @@ export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.secondary};
   width: 100%;
   height: ${RFValue(90, 812)}px;
-  padding: 0px 16px;
+  padding: 0px ${RFValue(16, 812)}px;
 `;
 
 export const InputContainer = styled.View`
@@ -18,8 +17,8 @@ export const InputContainer = styled.View`
   justify-content: space-between;
   background-color: ${({ theme }) => theme.colors.terciary_background};
   width: 100%;
-  padding: 4px 16px;
-  border-radius: 50px;
+  padding: ${RFValue(4, 812)}px ${RFValue(16, 812)}px;
+  border-radius: ${RFValue(50, 812)}px;
 `;
 
 export const Input = styled.TextInput`

@@ -10,9 +10,9 @@ export const Container = styled.View`
   /* height: ${RFValue(116, 812)}px; */
   border-radius: 5px;
   border: .5px solid ${({ theme }) => theme.colors.terciary+'25'};
-  padding: 8px;
-  margin-bottom: 28px;
-  margin-top: 8px;
+  padding: ${RFValue(8, 812)}px;
+  margin-bottom: ${RFValue(32, 812)}px;
+  margin-top: ${RFValue(8, 812)}px;
 `;
 
 export const InputRow = styled.View`
@@ -20,7 +20,7 @@ export const InputRow = styled.View`
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: ${RFValue(8, 812)}px;
 `;
 
 export const InputContainer = styled.View`
@@ -43,13 +43,13 @@ export const Input = styled.TextInput`
   background: ${({ theme }) => theme.colors.terciary_background};
   color: ${({ theme }) => theme.colors.terciary};
   border-radius: 5px;
-  padding: 4px 8px;
+  padding: ${RFValue(4, 812)}px ${RFValue(8, 812)}px;
 `;
 
 export const InputTitle = styled.Text`
   color: ${({ theme }) => theme.colors.terciary};
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(12, 812)}px;
-  margin-left: 8px;
-  margin-bottom: 4px;
+  margin-left: ${RFValue(8, 812)}px;
+  margin-bottom: ${RFValue(4, 812)}px;
 `;

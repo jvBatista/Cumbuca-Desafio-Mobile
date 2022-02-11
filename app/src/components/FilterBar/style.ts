@@ -11,15 +11,15 @@ export const Container = styled.View`
   align-items: center;
   justify-content: space-around;
   width: 100%;
-  margin: 8px 0px;
+  margin: ${RFValue(8, 812)}px 0px;
 `;
 
 export const Filter = styled.TouchableOpacity<FilterTypes>`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  border-radius: 50px;
-  padding: 4px 8px;
+  border-radius: ${RFValue(50, 812)}px;
+  padding: ${RFValue(4, 812)}px ${RFValue(8, 812)}px;
   background-color: ${({ theme, type }) => type === "selected" ? theme.colors.primary : 'transparent'};
 `;
 

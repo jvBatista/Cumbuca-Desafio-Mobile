@@ -13,7 +13,7 @@ export const Container = styled.View<ContainerTypes>`
   width: 100%;
   height: auto;
   border-radius: 5px;
-  padding: 16px;
+  padding: ${RFValue(16, 812)}px;
   margin-bottom: 8px;
   border: .5px solid ${({ theme }) => theme.colors.terciary+'25'};
 `;
@@ -23,7 +23,7 @@ export const TopRow = styled.View`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: ${RFValue(8, 812)}px;
 `;
 
 export const TitleContainer = styled.View`
@@ -36,7 +36,7 @@ export const ProductName = styled.Text`
   font-family: ${({ theme }) => theme.fonts.medium};
   font-size: ${RFValue(16, 812)}px;
   color: ${({ theme }) => theme.colors.primary};
-  margin-right: 4px;
+  margin-right: ${RFValue(4, 812)}px;
 `;
 
 export const AtributeName = styled.Text`
@@ -75,7 +75,7 @@ export const Input = styled.TextInput`
   background: ${({ theme }) => theme.colors.terciary_background};
   color: ${({ theme }) => theme.colors.terciary};
   border-radius: 5px;
-  padding: 4px 8px;
+  padding: ${RFValue(4, 812)}px ${RFValue(8, 812)}px;
 `;
 
 export const DropIcon = styled(MaterialIcons)`

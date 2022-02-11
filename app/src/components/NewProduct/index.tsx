@@ -56,7 +56,6 @@ export function NewProduct(
     
                 await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
                 const list = await AsyncStorage.getItem('@cpm_productList');
-                console.log(list);
     
                 Alert.alert(
                     "Produto criado com sucesso",

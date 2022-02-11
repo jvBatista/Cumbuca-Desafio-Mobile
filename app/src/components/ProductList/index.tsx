@@ -1,9 +1,13 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Animated } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Animated, View, Text } from 'react-native';
 import {
     Container,
     ItemsList,
-    LoadingContainer
+    LoadingContainer,
+    SearchIcon,
+    IconContainer,
+    NotFoundTitle,
+    NotFoundMessage
 } from './style';
 import { FilterBar } from '../../components/FilterBar';
 import { Product } from '../../components/Product';
@@ -81,69 +85,90 @@ export function ProductList({ searchQuery, productList, setProductList, loading 
                         <ActivityIndicator size="large" color={theme.colors.secondary} />
                     </LoadingContainer>
                 ) : (
-                    <Animated.FlatList
-                        style={{ width: "100%" }}
-                        data={productList.sort(sortingFunction).filter(item => {
-                            if (
-                                !searchQuery ||
-                                item.name
-                                    .toLowerCase()
-                                    .includes(searchQuery.toLowerCase().trim())
-                            ) {
-                                return item;
-                            }
-                        })}
-                        onScroll={Animated.event(
-                            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                            { useNativeDriver: true }
-                        )}
-                        renderItem={({ item, index }) => {
-                            const inputRange = [
-                                -1,
-                                0,
-                                ITEM_SIZE * index,
-                                ITEM_SIZE * (index + 2),
-                            ]
 
-                            const scale = scrollY.interpolate({
-                                inputRange,
-                                outputRange: [1, 1, 1, 0],
-                            })
+                    productList.filter(item => {
+                        if (
+                            !searchQuery ||
+                            item.name
+                                .toLowerCase()
+                                .includes(searchQuery.toLowerCase().trim())
+                        ) {
+                            return item;
+                        }
+                    }).length ? (
+                        <Animated.FlatList
+                            style={{ width: "100%" }}
+                            data={productList.sort(sortingFunction).filter(item => {
+                                if (
+                                    !searchQuery ||
+                                    item.name
+                                        .toLowerCase()
+                                        .includes(searchQuery.toLowerCase().trim())
+                                ) {
+                                    return item;
+                                }
+                            })}
+                            onScroll={Animated.event(
+                                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                                { useNativeDriver: true }
+                            )}
+                            renderItem={({ item, index }) => {
+                                const inputRange = [
+                                    -1,
+                                    0,
+                                    ITEM_SIZE * index,
+                                    ITEM_SIZE * (index + 2),
+                                ]
 
-                            const opacityInputRange = [
-                                -1,
-                                0,
-                                ITEM_SIZE * index,
-                                ITEM_SIZE * (index + .5),
-                            ]
+                                const scale = scrollY.interpolate({
+                                    inputRange,
+                                    outputRange: [1, 1, 1, 0],
+                                })
 
-                            const opacity = scrollY.interpolate({
-                                inputRange: opacityInputRange,
-                                outputRange: [1, 1, 1, 0],
-                            })
+                                const opacityInputRange = [
+                                    -1,
+                                    0,
+                                    ITEM_SIZE * index,
+                                    ITEM_SIZE * (index + .5),
+                                ]
 
-                            return (
-                                <Animated.View
-                                    style={{
-                                        transform: [{scale}],
-                                        opacity,
-                                    }}
-                                >
-                                    <KeyboardAvoidingView
-                                        behavior="position"
-                                        keyboardVerticalOffset={100}
+                                const opacity = scrollY.interpolate({
+                                    inputRange: opacityInputRange,
+                                    outputRange: [1, 1, 1, 0],
+                                })
+
+                                return (
+                                    <Animated.View
+                                        style={{
+                                            transform: [{ scale }],
+                                            opacity,
+                                        }}
                                     >
-                                        <Product
-                                            product={item}
-                                            productList={productList}
-                                            setProductList={setProductList}
-                                        />
-                                    </KeyboardAvoidingView>
-                                </Animated.View>
-                            );
-                        }}
-                        keyExtractor={item => item.productId.toString()}
-                    />
+                                        <KeyboardAvoidingView
+                                            behavior="position"
+                                            keyboardVerticalOffset={100}
+                                        >
+                                            <Product
+                                                product={item}
+                                                productList={productList}
+                                                setProductList={setProductList}
+                                            />
+                                        </KeyboardAvoidingView>
+                                    </Animated.View>
+                                );
+                            }}
+                            keyExtractor={item => item.productId.toString()}
+                        />
+                    ) : (
+                        <>
+                            <IconContainer>
+                                <SearchIcon name="search" />
+                            </IconContainer>
+                            <NotFoundTitle>Não encontramos nada com o termo digitado</NotFoundTitle>
+                            <NotFoundMessage>Por favor, verifique sua pesquisa e tente novamente para obter resultados.</NotFoundMessage>
+                        </>
+                    )
+
                 )
             }
         </Container>

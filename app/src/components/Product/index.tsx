@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { Alert } from 'react-native';
+import { Transitioning, Transition, TransitioningView } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import theme from '../../global/styles/theme';
 import {
@@ -31,6 +32,14 @@ interface IProductProps {
     setProductList: Dispatch<SetStateAction<IProduct[]>>;
 }
 
+const transition = (
+    <Transition.Together>
+        <Transition.In type="fade" durationMs={150} />
+        <Transition.Change />
+        <Transition.Out type="fade" durationMs={150} />
+    </Transition.Together>
+)
+
 export function Product(
     {
         product,
@@ -42,6 +51,7 @@ export function Product(
     // const [productName, setProductName] = useState(name);
     const [productNumberOfUnits, setProductNumberOfUnits] = useState(JSON.stringify(product.numberOfUnits));
     const [productUnitValue, setProductUnitValue] = useState(JSON.stringify(product.unitValue));
+    const ref = useRef<TransitioningView>(null);
 
     function handleOpenProduct() {
         if (isOpen && (productNumberOfUnits !== JSON.stringify(product.numberOfUnits) || productUnitValue !== JSON.stringify(product.unitValue))) {
@@ -72,7 +82,6 @@ export function Product(
 
         setProductList(newList);
         await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
-        console.log(productList);
     }
 
     function saveProduct() {
@@ -133,85 +142,94 @@ export function Product(
     }
 
     return (
-        <Container
-            opened={isOpen}
+        <Transitioning.View
+            transition={transition}
+            ref={ref}
         >
-            <TopRow>
-                <TitleContainer>
-                    <ProductName>{product.name}</ProductName>
-                    <AtributeName>{`id ${product.productId}`}</AtributeName>
-                </TitleContainer>
 
-                <TouchableOpacity onPress={handleOpenProduct}>
-                    <DropIcon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} />
-                </TouchableOpacity>
-            </TopRow>
+            <Container
+                opened={isOpen}
+            >
+                <TopRow>
+                    <TitleContainer>
+                        <ProductName>{product.name}</ProductName>
+                        <AtributeName>{`id ${product.productId}`}</AtributeName>
+                    </TitleContainer>
 
-            <AtributesContainer opened={isOpen}>
-                <Atribute opened={isOpen}>
-                    <AtributeName>Valor unitário</AtributeName>
-                    {
-                        isOpen ? (
-                            <Input
-                                value={productUnitValue}
-                                onChangeText={setProductUnitValue}
-                                placeholder='00.00'
-                                placeholderTextColor={`${theme.colors.secondary}66`}
-                                keyboardType="numeric"
-                            />
-                        ) : (
-                            <AtributeValue>{`R$ ${product.unitValue.toFixed(2)}`}</AtributeValue>
-                        )
-                    }
-                </Atribute>
+                    <TouchableOpacity onPress={()=>{
+                        ref.current.animateNextTransition()
+                        handleOpenProduct()
+                    }}>
+                        <DropIcon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} />
+                    </TouchableOpacity>
+                </TopRow>
 
-                <Atribute opened={isOpen}>
-                    <AtributeName>Em estoque</AtributeName>
-                    {
-                        isOpen ? (
-                            <Input
-                                value={productNumberOfUnits}
-                                onChangeText={setProductNumberOfUnits}
-                                placeholder='000'
-                                placeholderTextColor={`${theme.colors.secondary}66`}
-                                keyboardType="numeric"
-                            />
-                        ) : (
-                            <AtributeValue>{`${product.numberOfUnits} un.`}</AtributeValue>
-                        )
-                    }
-                </Atribute>
+                <AtributesContainer opened={isOpen}>
+                    <Atribute opened={isOpen}>
+                        <AtributeName>Valor unitário</AtributeName>
+                        {
+                            isOpen ? (
+                                <Input
+                                    value={productUnitValue}
+                                    onChangeText={setProductUnitValue}
+                                    placeholder='00.00'
+                                    placeholderTextColor={`${theme.colors.secondary}66`}
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <AtributeValue>{`R$ ${product.unitValue.toFixed(2)}`}</AtributeValue>
+                            )
+                        }
+                    </Atribute>
 
-                <Atribute opened={isOpen}>
-                    <AtributeName>Valor total</AtributeName>
-                    <AtributeValue>{`R$ ${(productUnitValue&&productNumberOfUnits) ? `${(parseFloat(productUnitValue) * parseInt(productNumberOfUnits)).toFixed(2)}` :  ""}`}</AtributeValue>
-                </Atribute>
-            </AtributesContainer>
+                    <Atribute opened={isOpen}>
+                        <AtributeName>Em estoque</AtributeName>
+                        {
+                            isOpen ? (
+                                <Input
+                                    value={productNumberOfUnits}
+                                    onChangeText={setProductNumberOfUnits}
+                                    placeholder='000'
+                                    placeholderTextColor={`${theme.colors.secondary}66`}
+                                    keyboardType="numeric"
+                                />
+                            ) : (
+                                <AtributeValue>{`${product.numberOfUnits} un.`}</AtributeValue>
+                            )
+                        }
+                    </Atribute>
 
-            {
-                isOpen ? (
-                    <ButtonsRow>
-                        <TextButton text="deletar" buttonFunction={() => {
-                            Alert.alert(
-                                "Deseja deletar o produto?",
-                                "",
-                                [
-                                    {
-                                        text: "Cancelar",
-                                        style: "cancel"
-                                    },
-                                    {
-                                        text: "Deletar", onPress: () => { deleteProduct() }
-                                    }
-                                ]
-                            );
-                        }} />
-                        <TextButton text="salvar" buttonFunction={saveProduct} />
-                    </ButtonsRow>
-                ) : (
-                    null
-                )
-            }
-        </Container>
+                    <Atribute opened={isOpen}>
+                        <AtributeName>Valor total</AtributeName>
+                        <AtributeValue>{`R$ ${(productUnitValue && productNumberOfUnits) ? `${(parseFloat(productUnitValue) * parseInt(productNumberOfUnits)).toFixed(2)}` : ""}`}</AtributeValue>
+                    </Atribute>
+                </AtributesContainer>
+
+                {
+                    isOpen ? (
+                        <ButtonsRow>
+                            <TextButton text="deletar" buttonFunction={() => {
+                                Alert.alert(
+                                    "Deseja deletar o produto?",
+                                    "",
+                                    [
+                                        {
+                                            text: "Cancelar",
+                                            style: "cancel"
+                                        },
+                                        {
+                                            text: "Deletar", onPress: () => { deleteProduct() }
+                                        }
+                                    ]
+                                );
+                            }} />
+                            <TextButton text="salvar" buttonFunction={saveProduct} />
+                        </ButtonsRow>
+                    ) : (
+                        null
+                    )
+                }
+            </Container>
+        </Transitioning.View>
     );
 }

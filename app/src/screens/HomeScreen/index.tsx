@@ -26,10 +26,8 @@ export default function Home({ navigation }: any) {
     setIsLoading(true);
     try {
       const value = await AsyncStorage.getItem('@cpm_productList');
-      console.log("hello", value);
       if (value) {
         const jsonValue = JSON.parse(value);
-        console.log("world", jsonValue);
         setProductList(jsonValue);
       }
     } catch (error) {
