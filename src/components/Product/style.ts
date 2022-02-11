@@ -88,5 +88,4 @@ export const ButtonsRow = styled.View`
   align-items: center;
   justify-content: flex-end;
   width: 100%;
-  /* margin-bottom: 8px; */
 `;

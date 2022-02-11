@@ -1,8 +1,7 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Animated, View, Text } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Animated } from 'react-native';
 import {
     Container,
-    ItemsList,
     LoadingContainer,
     SearchIcon,
     IconContainer,

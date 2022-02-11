@@ -26,7 +26,6 @@ export const Filter = styled.TouchableOpacity<FilterTypes>`
 export const FilterName = styled.Text<FilterTypes>`
   font-family: ${({ theme }) => theme.fonts.medium};
   font-size: ${RFValue(14, 812)}px;
-  /* background: transparent; */
   color: ${({ theme, type }) => type === "selected" ? theme.colors.secondary_background : theme.colors.primary};
 `;
 

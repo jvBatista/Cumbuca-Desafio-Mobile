@@ -38,40 +38,49 @@ export function NewProduct(
         let id = 1;
 
         while (typeof productList.find(item => item.productId === id) !== "undefined") id++;
-        
+
         return id;
     }
 
     const createNewProduct = async () => {
         if (productName && productNumberOfUnits && productUnitValue) {
-            if(productNumberOfUnits!=="0"){
+            if (productNumberOfUnits !== "0" && !productNumberOfUnits.includes(".")) {
                 const newList = [...productList];
                 newList.push({
                     name: productName,
                     productId: findProductId(),
                     numberOfUnits: parseInt(productNumberOfUnits),
-                    unitValue: parseInt(productUnitValue),
+                    unitValue: parseFloat(productUnitValue),
                 });
                 setProductList(newList);
-    
+
                 await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
-                const list = await AsyncStorage.getItem('@cpm_productList');
-    
+
                 Alert.alert(
                     "Produto criado com sucesso",
                     "",
                     [
-                        { text: "OK", onPress: () => {
-                            setProductName("")
-                            setProductNumberOfUnits("")
-                            setProductUnitValue("")
-                        } }
+                        {
+                            text: "OK", onPress: () => {
+                                setProductName("")
+                                setProductNumberOfUnits("")
+                                setProductUnitValue("")
+                            }
+                        }
                     ]
                 );
-            } else{
+            } else if (productNumberOfUnits.includes(".")) {
                 Alert.alert(
                     "Falha na criação do produto",
-                    "Valor de quantidade em estoque inválido",
+                    "Quantidade em estoque deve ser um valor inteiro",
+                    [
+                        { text: "OK" }
+                    ]
+                );
+            } else {
+                Alert.alert(
+                    "Falha na criação do produto",
+                    "Quantidade em estoque não pode ser igual a zero",
                     [
                         { text: "OK" }
                     ]
@@ -129,7 +138,7 @@ export function NewProduct(
             </InputRow>
 
             <View style={{ position: 'absolute', right: 16, bottom: -25, elevation: 5 }}>
-                <CreateButton buttonFunction={createNewProduct} isEnabled={productName && productNumberOfUnits && productUnitValue && productNumberOfUnits!=="0" ? true : false} />
+                <CreateButton buttonFunction={createNewProduct} isEnabled={productName && productNumberOfUnits && productUnitValue && productNumberOfUnits !== "0" ? true : false} />
             </View>
 
         </Container>

@@ -1,6 +1,5 @@
 import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
-import { FlatList } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export const Container = styled.View`
@@ -12,10 +11,6 @@ export const Container = styled.View`
   border-radius: 5px;
   padding: 0px ${RFValue(8, 812)}px;
   border: .5px solid ${({ theme }) => theme.colors.terciary+'25'};
-`;
-
-export const ItemsList = styled(FlatList)`
-  width: 100%;
 `;
 
 export const LoadingContainer = styled.View`

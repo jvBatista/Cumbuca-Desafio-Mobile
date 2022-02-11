@@ -14,7 +14,6 @@ export const Container = styled.View<ButtonTypes>`
   border: ${({ theme, type }) => type === "disabled" ? `.1px solid ${theme.colors.terciary}80` : 'none'};
   align-items: center;
   justify-content: center;
-  /* elevation: 5; */
 `;
 
 export const ButtonIcon = styled(MaterialIcons)<ButtonTypes>`

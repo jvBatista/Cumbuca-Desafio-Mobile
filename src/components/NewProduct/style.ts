@@ -1,13 +1,11 @@
 import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
-// import { TextInputMask } from 'react-native-masked-text';
 
 export const Container = styled.View`
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.background};
   width: 100%;
-  /* height: ${RFValue(116, 812)}px; */
   border-radius: 5px;
   border: .5px solid ${({ theme }) => theme.colors.terciary+'25'};
   padding: ${RFValue(8, 812)}px;
@@ -24,7 +22,6 @@ export const InputRow = styled.View`
 `;
 
 export const InputContainer = styled.View`
-  /* align-items: space-around; */
   justify-content: flex-start;
   width: 100%;
 `;
