@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Animated } from 'react-native';
 import {
     Container,
-    ItemsList
+    ItemsList,
+    LoadingContainer
 } from './style';
 import { FilterBar } from '../../components/FilterBar';
 import { Product } from '../../components/Product';
-import { FlatList } from 'react-native-gesture-handler';
+import theme from '../../global/styles/theme';
 
 interface IProduct {
     name: string;
@@ -16,9 +18,12 @@ interface IProduct {
 
 interface IProductListProps {
     searchQuery: string;
+    productList: Array<IProduct>;
+    setProductList: Dispatch<SetStateAction<IProduct[]>>;
+    loading: boolean;
 }
 
-export function ProductList({searchQuery}:IProductListProps) {
+export function ProductList({ searchQuery, productList, setProductList, loading }: IProductListProps) {
     const [sortFilter, setSortFilter] = useState("nome");
 
     function sortingFunction(a: IProduct, b: IProduct) {
@@ -30,7 +35,7 @@ export function ProductList({searchQuery}:IProductListProps) {
                 if (a.numberOfUnits < b.numberOfUnits) {
                     return -1;
                 }
-                
+
                 return 0;
             case "unitario":
                 if (a.unitValue > b.unitValue) {
@@ -39,18 +44,18 @@ export function ProductList({searchQuery}:IProductListProps) {
                 if (a.unitValue < b.unitValue) {
                     return -1;
                 }
-                
+
                 return 0;
             case "total":
-                const totalA = a.unitValue*a.numberOfUnits;
-                const totalB = b.unitValue*b.numberOfUnits;
+                const totalA = a.unitValue * a.numberOfUnits;
+                const totalB = b.unitValue * b.numberOfUnits;
                 if (totalA > totalB) {
                     return 1;
                 }
                 if (totalA < totalB) {
                     return -1;
                 }
-                
+
                 return 0;
             default:
                 if (a.name > b.name) {
@@ -59,63 +64,88 @@ export function ProductList({searchQuery}:IProductListProps) {
                 if (a.name < b.name) {
                     return -1;
                 }
-                
+
                 return 0;
         }
     }
 
-
-    const products = [
-        {
-            name: "Produto 1",
-            productId: 1,
-            numberOfUnits: 500,
-            unitValue: 5.99,
-        },
-        {
-            name: "Produto 2",
-            productId: 2,
-            numberOfUnits: 45,
-            unitValue: 5.99,
-        },
-        {
-            name: "Produto 3",
-            productId: 3,
-            numberOfUnits: 120,
-            unitValue: 5.99,
-        },
-        {
-            name: "Produto 4",
-            productId: 4,
-            numberOfUnits: 800,
-            unitValue: 5.99,
-        },
-    ];
+    const scrollY = useRef(new Animated.Value(0)).current;
+    const ITEM_SIZE = 96 + 8 * 3;
 
     return (
         <Container>
-            <FilterBar setFilter={setSortFilter}/>
-            <ItemsList
-                data={products.sort(sortingFunction).filter(item => {
-                    if (
-                      !searchQuery ||
-                      item.name
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase().trim())
-                    ) {
-                      return item;
-                    }
-                  })}
-                renderItem={({ item, index }) => (
-                    <Product
-                        name={item.name}
-                        productId={item.productId}
-                        numberOfUnits={item.numberOfUnits}
-                        unitValue={item.unitValue}
+            <FilterBar setFilter={setSortFilter} />
+            {
+                loading ? (
+                    <LoadingContainer>
+                        <ActivityIndicator size="large" color={theme.colors.secondary} />
+                    </LoadingContainer>
+                ) : (
+                    <Animated.FlatList
+                        style={{ width: "100%" }}
+                        data={productList.sort(sortingFunction).filter(item => {
+                            if (
+                                !searchQuery ||
+                                item.name
+                                    .toLowerCase()
+                                    .includes(searchQuery.toLowerCase().trim())
+                            ) {
+                                return item;
+                            }
+                        })}
+                        onScroll={Animated.event(
+                            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                            { useNativeDriver: true }
+                        )}
+                        renderItem={({ item, index }) => {
+                            const inputRange = [
+                                -1,
+                                0,
+                                ITEM_SIZE * index,
+                                ITEM_SIZE * (index + 2),
+                            ]
+
+                            const scale = scrollY.interpolate({
+                                inputRange,
+                                outputRange: [1, 1, 1, 0],
+                            })
+
+                            const opacityInputRange = [
+                                -1,
+                                0,
+                                ITEM_SIZE * index,
+                                ITEM_SIZE * (index + .5),
+                            ]
+
+                            const opacity = scrollY.interpolate({
+                                inputRange: opacityInputRange,
+                                outputRange: [1, 1, 1, 0],
+                            })
+
+                            return (
+                                <Animated.View
+                                    style={{
+                                        transform: [{scale}],
+                                        opacity,
+                                    }}
+                                >
+                                    <KeyboardAvoidingView
+                                        behavior="position"
+                                        keyboardVerticalOffset={100}
+                                    >
+                                        <Product
+                                            product={item}
+                                            productList={productList}
+                                            setProductList={setProductList}
+                                        />
+                                    </KeyboardAvoidingView>
+                                </Animated.View>
+                            );
+                        }}
+                        keyExtractor={item => item.productId.toString()}
                     />
-                )}
-                keyExtractor={item => item.productId}
-            />
+                )
+            }
         </Container>
     );
 }

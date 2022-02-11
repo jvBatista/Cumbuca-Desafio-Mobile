@@ -1,22 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { View, ImageBackground, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   HomeContainer,
-  FieldsContainer
+  FieldsContainer,
 } from './styles';
 import { ProductSearchBar } from '../../components/SearchBar';
 import { NewProduct } from '../../components/NewProduct';
 import { ProductList } from '../../components/ProductList';
 
 export default function Home({ navigation }: any) {
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const [newProductName, setNewProductName] = useState("");
-  const [newProductNumberOfUnits, setNewProductNumberOfUnits] = useState("");
-  const [newProductUnitValue, setNewProductUnitValue] = useState("");
+  interface IProduct {
+    name: string;
+    productId: number;
+    numberOfUnits: number;
+    unitValue: number;
+  };
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [productList, setProductList] = useState<IProduct[]>([]);
+
+  const getProductList = async () => {
+    setIsLoading(true);
+    try {
+      const value = await AsyncStorage.getItem('@cpm_productList');
+      console.log("hello", value);
+      if (value) {
+        const jsonValue = JSON.parse(value);
+        console.log("world", jsonValue);
+        setProductList(jsonValue);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
+  }
 
   useEffect(() => {
-
+    getProductList();
   }, []);
 
   return (
@@ -35,15 +58,11 @@ export default function Home({ navigation }: any) {
       />
       <FieldsContainer>
         <NewProduct
-          createFunction={() => { }}
-          productName={newProductName}
-          productNumberOfUnits={newProductNumberOfUnits}
-          productUnitValue={newProductUnitValue}
-          setProductName={setNewProductName}
-          setProductNumberOfUnits={setNewProductNumberOfUnits}
-          setProductUnitValue={setNewProductUnitValue}
+          productList={productList}
+          setProductList={setProductList}
         />
-        <ProductList searchQuery={searchQuery} />
+
+        <ProductList searchQuery={searchQuery} productList={productList} setProductList={setProductList} loading={isLoading} />
       </FieldsContainer>
     </HomeContainer>
   );

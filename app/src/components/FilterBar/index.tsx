@@ -19,8 +19,9 @@ export function FilterBar(
     return (
         <Container>
             <Filter
+                delayPressIn={0}
                 type={selectedFilter === 'nome' ? 'selected' : 'unselected'}
-                onPressIn={() => {
+                onPress={() => {
                     setSelectedFilter("nome")
                     setFilter("nome")
                 }}
@@ -34,8 +35,9 @@ export function FilterBar(
             </Filter>
 
             <Filter
+                delayPressIn={0}
                 type={selectedFilter === 'estoque' ? 'selected' : 'unselected'}
-                onPressIn={() => {
+                onPress={() => {
                     setSelectedFilter("estoque")
                     setFilter("estoque")
                 }}
@@ -49,8 +51,9 @@ export function FilterBar(
             </Filter>
 
             <Filter
+                delayPressIn={0}
                 type={selectedFilter === 'unitario' ? 'selected' : 'unselected'}
-                onPressIn={() => {
+                onPress={() => {
                     setSelectedFilter("unitario")
                     setFilter("unitario")
                 }}
@@ -64,8 +67,9 @@ export function FilterBar(
             </Filter>
 
             <Filter
+                delayPressIn={0}
                 type={selectedFilter === 'total' ? 'selected' : 'unselected'}
-                onPressIn={() => {
+                onPress={() => {
                     setSelectedFilter("total")
                     setFilter("total")
                 }}
