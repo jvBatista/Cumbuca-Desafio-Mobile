@@ -4,7 +4,7 @@ export default {
         secondary: '#f76e85',
         terciary: '#6e7377',
 
-        background: '#ffffff66',
+        background: '#ffffff80',
         secondary_background: '#ffffff',
         terciary_background: '#fdeaed',
     },

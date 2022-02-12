@@ -44,7 +44,7 @@ export function NewProduct(
 
     const createNewProduct = async () => {
         if (productName && productNumberOfUnits && productUnitValue) {
-            if(isNaN(Number(productNumberOfUnits)) || isNaN(Number(productUnitValue))){
+            if (isNaN(Number(productNumberOfUnits)) || isNaN(Number(productUnitValue))) {
                 Alert.alert(
                     "Falha na criação do produto",
                     "Informe valores numéricos",

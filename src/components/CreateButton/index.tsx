@@ -13,7 +13,17 @@ interface IButtonProps {
 export function CreateButton({ buttonFunction, isEnabled }: IButtonProps) {
   return (
     <TouchableOpacity onPress={buttonFunction}>
-      <Container type={isEnabled ? "enabled" : "disabled"}>
+      <Container type={isEnabled ? "enabled" : "disabled"}
+        style={{
+          shadowColor: "#000000",
+          shadowOffset: {
+            width: 0,
+            height: 4,
+          },
+          shadowOpacity: .3,
+          shadowRadius: 5
+        }}
+      >
         <ButtonIcon type={isEnabled ? "enabled" : "disabled"} name="add" />
       </Container>
     </TouchableOpacity>

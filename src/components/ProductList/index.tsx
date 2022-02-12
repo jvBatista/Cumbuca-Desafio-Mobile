@@ -1,5 +1,9 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Animated } from 'react-native';
+import {
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Animated,
+} from 'react-native';
 import {
     Container,
     LoadingContainer,
@@ -95,6 +99,7 @@ export function ProductList({ searchQuery, productList, setProductList, loading 
                             return item;
                         }
                     }).length ? (
+                        
                         <Animated.FlatList
                             style={{ width: "100%" }}
                             data={productList.sort(sortingFunction).filter(item => {
