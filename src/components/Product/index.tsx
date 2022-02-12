@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, View } from 'react-native';
 import { Transitioning, Transition, TransitioningView } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import theme from '../../global/styles/theme';
@@ -14,6 +14,7 @@ import {
     AtributeValue,
     Input,
     DropIcon,
+    ArrowPadIcon,
     ButtonsRow,
 } from './style';
 import { TextButton } from '../../components/TextButton';
@@ -85,49 +86,66 @@ export function Product(
     }
 
     function saveProduct() {
-        if (productNumberOfUnits && productUnitValue && productNumberOfUnits === "0") {
-            Alert.alert(
-                "Deseja deletar o produto?",
-                "O produto será deletado se a quantidade em estoque for 0",
-                [
-                    {
-                        text: "Cancelar",
-                        style: "cancel"
-                    },
-                    {
-                        text: "Deletar", onPress: () => { deleteProduct() }
-                    }
-                ]
-            );
-        } else if (productNumberOfUnits && productUnitValue) {
-            const newProduct = productList.find(item => item.productId === product.productId);
-            if (newProduct) {
-
+        if (productNumberOfUnits && productUnitValue) {
+            if (isNaN(Number(productNumberOfUnits)) || isNaN(Number(productUnitValue))) {
                 Alert.alert(
-                    "Deseja salvar as alterações?",
-                    "",
+                    "Falha na criação do produto",
+                    "Informe valores numéricos",
+                    [
+                        { text: "OK" }
+                    ]
+                );
+            } else if (productNumberOfUnits === "0") {
+                Alert.alert(
+                    "Deseja deletar o produto?",
+                    "O produto será deletado se a quantidade em estoque for 0",
                     [
                         {
                             text: "Cancelar",
                             style: "cancel"
                         },
                         {
-                            text: "Salvar", onPress: async () => {
-                                newProduct.numberOfUnits = parseInt(productNumberOfUnits);
-                                newProduct.unitValue = parseFloat(productUnitValue);
-
-                                const newList = [...productList];
-                                newList[newList.indexOf(product)] = newProduct;
-
-                                setProductList(newList);
-                                await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
-                                setIsOpen(!isOpen);
-                            }
+                            text: "Deletar", onPress: () => { deleteProduct() }
                         }
                     ]
                 );
-            } else console.log("nenhum produto encontrado");
+            } else if (productNumberOfUnits.includes(".")) {
+                Alert.alert(
+                    "Falha na criação do produto",
+                    "Quantidade em estoque deve ser um valor inteiro",
+                    [
+                        { text: "OK" }
+                    ]
+                );
+            } else {
+                const newProduct = productList.find(item => item.productId === product.productId);
+                if (newProduct) {
 
+                    Alert.alert(
+                        "Deseja salvar as alterações?",
+                        "",
+                        [
+                            {
+                                text: "Cancelar",
+                                style: "cancel"
+                            },
+                            {
+                                text: "Salvar", onPress: async () => {
+                                    newProduct.numberOfUnits = parseInt(productNumberOfUnits);
+                                    newProduct.unitValue = parseFloat(productUnitValue);
+
+                                    const newList = [...productList];
+                                    newList[newList.indexOf(product)] = newProduct;
+
+                                    setProductList(newList);
+                                    await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
+                                    setIsOpen(!isOpen);
+                                }
+                            }
+                        ]
+                    );
+                } else console.log("nenhum produto encontrado");
+            }
         } else {
             Alert.alert(
                 "Falha ao salvar mudanças",
@@ -156,7 +174,7 @@ export function Product(
                         <AtributeName>{`id ${product.productId}`}</AtributeName>
                     </TitleContainer>
 
-                    <TouchableOpacity onPress={()=>{
+                    <TouchableOpacity onPress={() => {
                         ref.current.animateNextTransition()
                         handleOpenProduct()
                     }}>
@@ -186,13 +204,29 @@ export function Product(
                         <AtributeName>Em estoque</AtributeName>
                         {
                             isOpen ? (
-                                <Input
-                                    value={productNumberOfUnits}
-                                    onChangeText={setProductNumberOfUnits}
-                                    placeholder='000'
-                                    placeholderTextColor={`${theme.colors.secondary}66`}
-                                    keyboardType="numeric"
-                                />
+                                <View style={{ alignItems: "center" }} >
+                                    <TouchableOpacity onPress={() => {
+                                        if (!isNaN(Number(productNumberOfUnits))) {
+                                            setProductNumberOfUnits(JSON.stringify(Number(productNumberOfUnits) + 1))
+                                        }
+                                    }}>
+                                        <ArrowPadIcon name={"arrow-drop-up"} />
+                                    </TouchableOpacity>
+                                    <Input
+                                        value={productNumberOfUnits}
+                                        onChangeText={setProductNumberOfUnits}
+                                        placeholder='000'
+                                        placeholderTextColor={`${theme.colors.secondary}66`}
+                                        keyboardType="numeric"
+                                    />
+                                    <TouchableOpacity onPress={() => {
+                                        if (!isNaN(Number(productNumberOfUnits))) {
+                                            setProductNumberOfUnits(JSON.stringify(Number(productNumberOfUnits) - 1))
+                                        }
+                                    }}>
+                                        <ArrowPadIcon name={"arrow-drop-down"} />
+                                    </TouchableOpacity>
+                                </View>
                             ) : (
                                 <AtributeValue>{`${product.numberOfUnits} un.`}</AtributeValue>
                             )

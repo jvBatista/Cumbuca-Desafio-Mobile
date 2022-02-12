@@ -44,7 +44,15 @@ export function NewProduct(
 
     const createNewProduct = async () => {
         if (productName && productNumberOfUnits && productUnitValue) {
-            if (productNumberOfUnits !== "0" && !productNumberOfUnits.includes(".")) {
+            if(isNaN(Number(productNumberOfUnits)) || isNaN(Number(productUnitValue))){
+                Alert.alert(
+                    "Falha na criação do produto",
+                    "Informe valores numéricos",
+                    [
+                        { text: "OK" }
+                    ]
+                );
+            } else if (productNumberOfUnits !== "0" && !productNumberOfUnits.includes(".")) {
                 const newList = [...productList];
                 newList.push({
                     name: productName,
