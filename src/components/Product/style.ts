@@ -83,6 +83,10 @@ export const DropIcon = styled(MaterialIcons)`
   color: ${({ theme }) => theme.colors.primary};
 `;
 
+export const ArrowPadIcon = styled(DropIcon)`
+  font-size: ${RFValue(28, 812)}px;
+`;
+
 export const ButtonsRow = styled.View`
   flex-direction: row;
   align-items: center;

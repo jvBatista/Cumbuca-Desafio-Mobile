@@ -1,5 +1,10 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
-import { Alert } from 'react-native';
+import {
+    Alert,
+    View,
+    Animated,
+    Dimensions
+} from 'react-native';
 import { Transitioning, Transition, TransitioningView } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import theme from '../../global/styles/theme';
@@ -14,6 +19,7 @@ import {
     AtributeValue,
     Input,
     DropIcon,
+    ArrowPadIcon,
     ButtonsRow,
 } from './style';
 import { TextButton } from '../../components/TextButton';
@@ -32,14 +38,6 @@ interface IProductProps {
     setProductList: Dispatch<SetStateAction<IProduct[]>>;
 }
 
-const transition = (
-    <Transition.Together>
-        <Transition.In type="fade" durationMs={150} />
-        <Transition.Change />
-        <Transition.Out type="fade" durationMs={150} />
-    </Transition.Together>
-)
-
 export function Product(
     {
         product,
@@ -48,10 +46,12 @@ export function Product(
     }: IProductProps
 ) {
     const [isOpen, setIsOpen] = useState(false);
-    // const [productName, setProductName] = useState(name);
     const [productNumberOfUnits, setProductNumberOfUnits] = useState(JSON.stringify(product.numberOfUnits));
     const [productUnitValue, setProductUnitValue] = useState(JSON.stringify(product.unitValue));
+
     const ref = useRef<TransitioningView>(null);
+    const translationX = useRef(new Animated.Value(0)).current;
+    const WIDTH = Dimensions.get('window').width;
 
     function handleOpenProduct() {
         if (isOpen && (productNumberOfUnits !== JSON.stringify(product.numberOfUnits) || productUnitValue !== JSON.stringify(product.unitValue))) {
@@ -75,59 +75,87 @@ export function Product(
         } else setIsOpen(!isOpen);
     }
 
-    const deleteProduct = async () => {
-        const newList = [...productList];
-        const index = newList.indexOf(product);
-        if (index > -1) newList.splice(newList.indexOf(product), 1);
 
-        setProductList(newList);
-        await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
-    }
+    const deleteProduct = async () => {
+        setIsOpen(!isOpen);
+        Animated.timing(
+            translationX,
+            {
+                toValue: 1,
+                duration: 510,
+                useNativeDriver: true
+            }
+        ).start(async () => {
+            const newList = [...productList];
+            const index = newList.indexOf(product);
+            if (index > -1) newList.splice(newList.indexOf(product), 1);
+
+            setProductList(newList);
+            await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
+        });
+    };
 
     function saveProduct() {
-        if (productNumberOfUnits && productUnitValue && productNumberOfUnits === "0") {
-            Alert.alert(
-                "Deseja deletar o produto?",
-                "O produto será deletado se a quantidade em estoque for 0",
-                [
-                    {
-                        text: "Cancelar",
-                        style: "cancel"
-                    },
-                    {
-                        text: "Deletar", onPress: () => { deleteProduct() }
-                    }
-                ]
-            );
-        } else if (productNumberOfUnits && productUnitValue) {
-            const newProduct = productList.find(item => item.productId === product.productId);
-            if (newProduct) {
-
+        if (productNumberOfUnits && productUnitValue) {
+            if (isNaN(Number(productNumberOfUnits)) || isNaN(Number(productUnitValue))) {
                 Alert.alert(
-                    "Deseja salvar as alterações?",
-                    "",
+                    "Falha na criação do produto",
+                    "Informe valores numéricos",
+                    [
+                        { text: "OK" }
+                    ]
+                );
+            } else if (productNumberOfUnits === "0") {
+                Alert.alert(
+                    "Deseja deletar o produto?",
+                    "O produto será deletado se a quantidade em estoque for 0",
                     [
                         {
                             text: "Cancelar",
                             style: "cancel"
                         },
                         {
-                            text: "Salvar", onPress: async () => {
-                                newProduct.numberOfUnits = parseInt(productNumberOfUnits);
-                                newProduct.unitValue = parseFloat(productUnitValue);
-
-                                const newList = [...productList];
-                                newList[newList.indexOf(product)] = newProduct;
-
-                                setProductList(newList);
-                                await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
-                                setIsOpen(!isOpen);
-                            }
+                            text: "Deletar", onPress: () => { deleteProduct() }
                         }
                     ]
                 );
-            } else console.log("nenhum produto encontrado");
+            } else if (productNumberOfUnits.includes(".")) {
+                Alert.alert(
+                    "Falha na criação do produto",
+                    "Quantidade em estoque deve ser um valor inteiro",
+                    [
+                        { text: "OK" }
+                    ]
+                );
+            } else {
+                const newProduct = productList.find(item => item.productId === product.productId);
+                if (newProduct) {
 
+                    Alert.alert(
+                        "Deseja salvar as alterações?",
+                        "",
+                        [
+                            {
+                                text: "Cancelar",
+                                style: "cancel"
+                            },
+                            {
+                                text: "Salvar", onPress: async () => {
+                                    newProduct.numberOfUnits = parseInt(productNumberOfUnits);
+                                    newProduct.unitValue = parseFloat(productUnitValue);
+
+                                    const newList = [...productList];
+                                    newList[newList.indexOf(product)] = newProduct;
+
+                                    setProductList(newList);
+                                    await AsyncStorage.setItem('@cpm_productList', JSON.stringify(newList));
+                                    setIsOpen(!isOpen);
+                                }
+                            }
+                        ]
+                    );
+                } else console.log("nenhum produto encontrado");
+            }
         } else {
             Alert.alert(
                 "Falha ao salvar mudanças",
@@ -141,95 +169,135 @@ export function Product(
         }
     }
 
+    const translateX = translationX.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, WIDTH]
+    });
+
+    const opacity = translationX.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 0]
+    });
+
+    const transition = (
+        <Transition.Together>
+            <Transition.In type="fade" durationMs={150} />
+            <Transition.Change />
+            <Transition.Out type="fade" durationMs={150} />
+        </Transition.Together>
+    );
+
     return (
-        <Transitioning.View
-            transition={transition}
-            ref={ref}
+        <Animated.View
+            style={{
+                transform: [{ translateX }],
+                opacity,
+            }}
         >
-
-            <Container
-                opened={isOpen}
+            <Transitioning.View
+                transition={transition}
+                ref={ref}
             >
-                <TopRow>
-                    <TitleContainer>
-                        <ProductName>{product.name}</ProductName>
-                        <AtributeName>{`id ${product.productId}`}</AtributeName>
-                    </TitleContainer>
+                <Container
+                    opened={isOpen}
+                >
+                    <TopRow>
+                        <TitleContainer>
+                            <ProductName>{product.name}</ProductName>
+                            <AtributeName>{`id ${product.productId}`}</AtributeName>
+                        </TitleContainer>
 
-                    <TouchableOpacity onPress={()=>{
-                        ref.current.animateNextTransition()
-                        handleOpenProduct()
-                    }}>
-                        <DropIcon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} />
-                    </TouchableOpacity>
-                </TopRow>
+                        <TouchableOpacity onPress={() => {
+                            ref.current.animateNextTransition()
+                            handleOpenProduct()
+                        }}>
+                            <DropIcon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} />
+                        </TouchableOpacity>
+                    </TopRow>
 
-                <AtributesContainer opened={isOpen}>
-                    <Atribute opened={isOpen}>
-                        <AtributeName>Valor unitário</AtributeName>
-                        {
-                            isOpen ? (
-                                <Input
-                                    value={productUnitValue}
-                                    onChangeText={setProductUnitValue}
-                                    placeholder='00.00'
-                                    placeholderTextColor={`${theme.colors.secondary}66`}
-                                    keyboardType="numeric"
-                                />
-                            ) : (
-                                <AtributeValue>{`R$ ${product.unitValue.toFixed(2)}`}</AtributeValue>
-                            )
-                        }
-                    </Atribute>
+                    <AtributesContainer opened={isOpen}>
+                        <Atribute opened={isOpen}>
+                            <AtributeName>Valor unitário</AtributeName>
+                            {
+                                isOpen ? (
+                                    <Input
+                                        value={productUnitValue}
+                                        onChangeText={setProductUnitValue}
+                                        placeholder='00.00'
+                                        placeholderTextColor={`${theme.colors.secondary}66`}
+                                        keyboardType="numeric"
+                                    />
+                                ) : (
+                                    <AtributeValue>{`R$ ${product.unitValue.toFixed(2)}`}</AtributeValue>
+                                )
+                            }
+                        </Atribute>
 
-                    <Atribute opened={isOpen}>
-                        <AtributeName>Em estoque</AtributeName>
-                        {
-                            isOpen ? (
-                                <Input
-                                    value={productNumberOfUnits}
-                                    onChangeText={setProductNumberOfUnits}
-                                    placeholder='000'
-                                    placeholderTextColor={`${theme.colors.secondary}66`}
-                                    keyboardType="numeric"
-                                />
-                            ) : (
-                                <AtributeValue>{`${product.numberOfUnits} un.`}</AtributeValue>
-                            )
-                        }
-                    </Atribute>
+                        <Atribute opened={isOpen}>
+                            <AtributeName>Em estoque</AtributeName>
+                            {
+                                isOpen ? (
+                                    <View style={{ alignItems: "center" }} >
+                                        <TouchableOpacity onPress={() => {
+                                            if (!isNaN(Number(productNumberOfUnits))) {
+                                                setProductNumberOfUnits(JSON.stringify(Number(productNumberOfUnits) + 1))
+                                            }
+                                        }}>
+                                            <ArrowPadIcon name={"arrow-drop-up"} />
+                                        </TouchableOpacity>
+                                        <Input
+                                            value={productNumberOfUnits}
+                                            onChangeText={setProductNumberOfUnits}
+                                            placeholder='000'
+                                            placeholderTextColor={`${theme.colors.secondary}66`}
+                                            keyboardType="numeric"
+                                        />
+                                        <TouchableOpacity onPress={() => {
+                                            if (!isNaN(Number(productNumberOfUnits))) {
+                                                setProductNumberOfUnits(JSON.stringify(Number(productNumberOfUnits) - 1))
+                                            }
+                                        }}>
+                                            <ArrowPadIcon name={"arrow-drop-down"} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ) : (
+                                    <AtributeValue>{`${product.numberOfUnits} un.`}</AtributeValue>
+                                )
+                            }
+                        </Atribute>
 
-                    <Atribute opened={isOpen}>
-                        <AtributeName>Valor total</AtributeName>
-                        <AtributeValue>{`R$ ${(productUnitValue && productNumberOfUnits) ? `${(parseFloat(productUnitValue) * parseInt(productNumberOfUnits)).toFixed(2)}` : ""}`}</AtributeValue>
-                    </Atribute>
-                </AtributesContainer>
+                        <Atribute opened={isOpen}>
+                            <AtributeName>Valor total</AtributeName>
+                            <AtributeValue>{`R$ ${(productUnitValue && productNumberOfUnits) ? `${(parseFloat(productUnitValue) * parseInt(productNumberOfUnits)).toFixed(2)}` : ""}`}</AtributeValue>
+                        </Atribute>
+                    </AtributesContainer>
 
-                {
-                    isOpen ? (
-                        <ButtonsRow>
-                            <TextButton text="deletar" buttonFunction={() => {
-                                Alert.alert(
-                                    "Deseja deletar o produto?",
-                                    "",
-                                    [
-                                        {
-                                            text: "Cancelar",
-                                            style: "cancel"
-                                        },
-                                        {
-                                            text: "Deletar", onPress: () => { deleteProduct() }
-                                        }
-                                    ]
-                                );
-                            }} />
-                            <TextButton text="salvar" buttonFunction={saveProduct} />
-                        </ButtonsRow>
-                    ) : (
-                        null
-                    )
-                }
-            </Container>
-        </Transitioning.View>
+                    {
+                        isOpen ? (
+                            <ButtonsRow>
+                                <TextButton text="deletar" buttonFunction={() => {
+                                    Alert.alert(
+                                        "Deseja deletar o produto?",
+                                        "",
+                                        [
+                                            {
+                                                text: "Cancelar",
+                                                style: "cancel"
+                                            },
+                                            {
+                                                text: "Deletar", onPress: () => { deleteProduct() }
+                                            }
+                                        ]
+                                    );
+                                }} />
+                                <TextButton text="salvar" buttonFunction={saveProduct} />
+                            </ButtonsRow>
+                        ) : (
+                            null
+                        )
+                    }
+                </Container>
+            </Transitioning.View>
+        </Animated.View>
     );
 }

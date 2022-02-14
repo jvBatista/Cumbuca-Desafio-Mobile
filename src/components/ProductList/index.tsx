@@ -1,5 +1,9 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Animated } from 'react-native';
+import {
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Animated,
+} from 'react-native';
 import {
     Container,
     LoadingContainer,
@@ -95,6 +99,7 @@ export function ProductList({ searchQuery, productList, setProductList, loading 
                             return item;
                         }
                     }).length ? (
+                        
                         <Animated.FlatList
                             style={{ width: "100%" }}
                             data={productList.sort(sortingFunction).filter(item => {
@@ -163,8 +168,16 @@ export function ProductList({ searchQuery, productList, setProductList, loading 
                             <IconContainer>
                                 <SearchIcon name="search" />
                             </IconContainer>
-                            <NotFoundTitle>Não encontramos nada com o termo digitado</NotFoundTitle>
-                            <NotFoundMessage>Por favor, verifique sua pesquisa e tente novamente para obter resultados.</NotFoundMessage>
+                            <NotFoundTitle>
+                                {
+                                    searchQuery ? "Não encontramos nada com o termo digitado" : "Nenhum produto foi criado ainda"
+                                }
+                            </NotFoundTitle>
+                            <NotFoundMessage>
+                                {
+                                    searchQuery ? "Por favor, verifique sua pesquisa e tente novamente para obter resultados" : "Crie um produto para começar a usar o app"
+                                }
+                            </NotFoundMessage>
                         </>
                     )
 
